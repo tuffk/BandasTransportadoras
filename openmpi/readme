@@ -1,0 +1,30 @@
+para instalar:
+
+tar -xzvf openmpi-1.8.7.tar.gz
+cd openmpi-1.8.7
+mkdir build
+cd build
+../configure --prefix=/usr/local
+sudo make
+sudo make install
+
+seguir hasta el paso 8: https://help.ubuntu.com/community/MpichCluster
+me sirvio nfs-kernel-server y nfs-common en lugar de nfs-server y nfs-client (nfs-utils para redhat/centos)
+
+no hice lo de keychain, no use password con el ssh-keygen
+
+
+echo -e "master slots=2\nslave1 slots=2" >> machinefile
+mpicc hello_c.c
+mpirun -np 2 --hostfile machinefile ./a.out
+
+si sale error de que no encuentra una libreria o no encuentra mpicc:
+sudo find / -name mpicc
+sudo find / -name libreriaquenoencuentra.so*
+
+vi ~mpiuser/.bashrc
+agregar hasta abajo:
+export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
+export PATH=$PATH:/usr/lib/openmpi/bin
+
+
