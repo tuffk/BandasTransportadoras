@@ -12,9 +12,20 @@ int derecha;
 int izquierda;
 int sentido;//1: ->; 2: <-; 0: parado;
 double timer;
+bool forcestop=false;
+
+void gestor_usrsig1(int sig)
+{
+	if(forcestop)
+		forcestop=!forcestop;
+	else
+		forcestop=!forcestop;
+}
 
 void cambioSentido()
 {
+	if(forcestop)
+		return;
 	if(sentido==1)
 		sentido = 2;
 	else if(sentido == 2)
@@ -23,6 +34,8 @@ void cambioSentido()
 
 void pararranca(int x)
 {
+	if(forcestop)
+		return;
 	if(x==3)// parar la banda
 		sentido =0;
 	else
@@ -31,6 +44,8 @@ void pararranca(int x)
 
 int check(bool s)
 {
+	if(forcestop)
+		return;
 	if(derecha==0 && izquierda == 0){
 		pararranca(3);
 	}else if(derecha==0){
@@ -64,6 +79,8 @@ void timeout()
 	if(timer>60)
 		pararranca(3);
 }
+
+
 
 int main(argc, const char * argv[])
 {
