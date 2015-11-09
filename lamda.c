@@ -30,7 +30,7 @@ return x;
 }//Cierre de equiz
 
 
-int main(int argc, const char * argv[])
+int main(int argc, const char * argv[]) //  generamos una persoan cada poisson 
 {
 clock_t begin, end;
 double time_spent;

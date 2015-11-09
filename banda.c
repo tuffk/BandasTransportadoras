@@ -11,6 +11,7 @@
 int derecha;
 int izquierda;
 int sentido;//1: ->; 2: <-; 0: parado;
+double timer;
 
 void cambioSentido()
 {
@@ -22,10 +23,10 @@ void cambioSentido()
 
 void pararranca(int x)
 {
-	if(x==3)
+	if(x==3)// parar la banda
 		sentido =0;
 	else
-		sentido = x;
+		sentido = x;//arranca la banda con el sentido dado
 }
 
 int check(bool s)
@@ -34,26 +35,38 @@ int check(bool s)
 		pararranca(3);
 	}else if(derecha==0){
 		pararranca(1);
+		timer=0;
 	}else if(izquierda==0){
 		pararranca(2);
+		timer=0;
 	}
 	else if(sentido ==1)
 	{
 		if(izquierda<(derecha -4))
+		{
 			cambioSentido();
+			timer=0;
+		}
+			
 	}else if(sentido ==2){
 		if(derecha<(izquierda-4))
+		{	
 			cambioSentido();
+			timer=0;
+		}
 	}
+	timeout();
 	
+}
+
+void timeout()
+{
+	if(timer>60)
+		pararranca(3);
 }
 
 int main(argc, const char * argv[])
 {
-	
-	sentido = true;
-	int cruzando=0;
-
 
 	return 0;
 }
