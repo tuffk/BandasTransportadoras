@@ -35,6 +35,7 @@ typedef enum { PARADO, IZQUIERDA, DERECHA} SENTIDO;
 int derecha;
 int izquierda;
 int onBoard;
+int bandas, secciones, actual;
 SENTIDO sentido;//1: ->; 2: <-; 0: parado;
 double timer;
 bool forcestop=false;
@@ -52,6 +53,7 @@ void aguantamela()
 	if(onBoard !=0)
 	{
 		sleep(3);
+		//printf("espero\n");
 	}
 }
 
@@ -139,9 +141,40 @@ void cruzar()
 		}else if(kuz[2]== (time_t)0){
 			kuz[2] = time(NULL);
 		}
+		if(decide())
+		{
+			if(actual <(bandas-1))
+			{
+				data[((actual+1)*2)]+=1;
+				write(FILEPATH,&data,getpagesize());
+				msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+			}
+		}
 		check();
 	}else if(sentido == DERECHA && capacidad>=onBoard){
 		derecha--;
+		onBoard++;
+		
+		if(kuz[0]== (time_t)0)
+		{
+			kuz[0] = time(NULL);
+		}else if(kuz[1]== (time_t)0)
+		{
+			kuz[1] = time(NULL);
+		}else if(kuz[2]== (time_t)0){
+			kuz[2] = time(NULL);
+		}
+		
+		if(decide())
+		{
+			if(actual >(0))
+			{
+				data[(((actual-1)*2)+1)]+=1;
+				write(FILEPATH,&data,getpagesize());
+				msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+				
+			}
+		}
 		check();
 	}
 	
@@ -162,13 +195,18 @@ void cruzar()
 	}
 }
 
+int decide()
+{
+	return rand()%2;
+}
+
 int main(int argc, const char * argv[])
 {
 	
 	
 	
 	// argumentos--------------------
-	int bandas=1, secciones=1, actual=0;
+	bandas=1; secciones=1; actual=0;
 	//formula para sacar la fila derecha e izquierda de la banda
 	// # de banda x2= izquierda    		izquierda+1=derecha
 	
@@ -190,9 +228,9 @@ int main(int argc, const char * argv[])
 	msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	/*
 	data[1]=modishnes;
-			write(FILEPATH,&data,getpagesize());
-			msync (FILEPATH, 10*sizeof(int), MS_ASYNC);
-			data[1]
+	write(FILEPATH,&data,getpagesize());
+	msync (FILEPATH, 10*sizeof(int), MS_ASYNC);
+	data[1]
 	*/
 	//----- shared mem end
 	int i=0;
@@ -204,14 +242,24 @@ int main(int argc, const char * argv[])
 	derecha = rand()%50;
 	izquierda = rand()%50;
 	onBoard=0;
-	pararranca(DERECHA);
+	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+	//izquierda= data[actual]; 
+	//derecha = data[actual+1];
+	
+	izquierda = 31;
+	derecha = 32;
+	if(izquierda>derecha)
+	{
+		pararranca(IZQUIERDA);
+	}else{
+		pararranca(DERECHA);
+	}
 	printf("sentido: %d\n",sentido);
 	sleep(3);
 	while(derecha >0 || izquierda >0)
 	{
-		izquierda= data[actual]; 
-		derecha = data[actual+1];
-		printf("dejaron de cruzar, d=%d , i=%d\n",derecha,izquierda);
+		//izquierda= data[actual]; 
+		//derecha = data[actual+1];
 		cruzar();
 		printf("d=%d , i=%d\n",derecha,izquierda);
 		data[actual]= izquierda;
