@@ -4,10 +4,27 @@
 #include <stdbool.h>
 #include <math.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/ipc.h> 
+#include <sys/shm.h> 
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+#include <stdlib.h>
+#define BUFSIZE 64
+
+#define FILEPATH "./mmaped.bin"
 
 #define tcruse 2
 #define capacidad 3
 time_t kuz[capacidad];
+
+int fd;
+int *data;
+
 double ElapsedTime(time_t x)
 {
 	return ((double)(time(NULL)-x));
@@ -147,20 +164,30 @@ void cruzar()
 
 int main(int argc, const char * argv[])
 {
-	//seccion de test---------------------
 	
-	time_t pito=time(NULL);
-	printf("%g\n",pito);
-	pito = (time_t) 0;
-	printf("%g\n",pito);
-	if(pito == (time_t)0)
-	{
-		printf("es comparable\n");
-	}else{
-		printf("no es\n");
-	}
 	
-	/// fin seccion test --------------------
+	
+	// argumentos--------------------
+	int bandas, secciones;
+	//formula para sacar la fila derecha e izquierda de la banda
+	// # de banda x2= izquierda    		izquierda+1=derecha
+	
+	
+	
+	/// argumentos--------------------
+	
+	//---------shared mem
+	fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	data=mmap(0, bandas*2*sizeof(int), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd, 0);
+	write(fd, "", 1);
+	msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+	/*
+	data[1]=modishnes;
+			write(FILEPATH,&data,getpagesize());
+			msync (FILEPATH, 10*sizeof(int), MS_ASYNC);
+			data[1]
+	*/
+	//----- shared mem end
 	int i=0;
 	for(;i<capacidad;++i)
 	{
