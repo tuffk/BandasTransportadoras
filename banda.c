@@ -123,7 +123,7 @@ void timeout()
 
 void cruzar()
 {
-	if(forcestop)
+	if(forcestop || (derecha==0 && izquierda == 0))
 		return;
 	
 	if(sentido==IZQUIERDA && capacidad>onBoard)
@@ -168,11 +168,18 @@ int main(int argc, const char * argv[])
 	
 	
 	// argumentos--------------------
-	int bandas, secciones;
+	int bandas=1, secciones=1, actual=0;
 	//formula para sacar la fila derecha e izquierda de la banda
 	// # de banda x2= izquierda    		izquierda+1=derecha
 	
+	if(argv[1]!=NULL)
+		bandas=atoi(argv[1]);
+	if(argv[2]!=NULL)
+		actual=atoi(argv[2]);
 	
+	//printf("%d",actual);
+	//printf("%s\n",argv[1]);
+	//printf("%s\n",argv[2]);
 	
 	/// argumentos--------------------
 	
@@ -200,10 +207,17 @@ int main(int argc, const char * argv[])
 	pararranca(DERECHA);
 	printf("sentido: %d\n",sentido);
 	sleep(3);
-	while(derecha !=0 || izquierda !=0)
+	while(derecha >0 || izquierda >0)
 	{
+		izquierda= data[actual]; 
+		derecha = data[actual+1];
+		printf("dejaron de cruzar, d=%d , i=%d\n",derecha,izquierda);
 		cruzar();
 		printf("d=%d , i=%d\n",derecha,izquierda);
+		data[actual]= izquierda;
+		data[actual+1] =  derecha;
+		write(FILEPATH,&data,getpagesize());
+		msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	}
 	printf("dejaron de cruzar, d=%d , i=%d\n",derecha,izquierda);
 	return 0;
