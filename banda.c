@@ -206,6 +206,23 @@ int decide()
 	return rand()%2;
 }
 
+void generamela()
+{
+  int r=0;
+  if(derecha< 7)
+  {
+    r=rand()%300;
+    if(r ==5)
+      derecha++;
+  }
+  if(izquierda < 7)
+  {
+    r=rand()%300;
+    if(r ==5)
+      izquierda++;
+  }
+}
+
 int main(int argc, const char * argv[])
 {
 	
@@ -249,11 +266,11 @@ int main(int argc, const char * argv[])
 	izquierda = rand()%50;
 	onBoard=0;
 	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
-	//izquierda= data[actual]; 
-	//derecha = data[actual+1];
+	izquierda= data[actual]; 
+	derecha = data[actual+1];
 	
-	izquierda = 31;
-	derecha = 32;
+	//izquierda = 31;
+	//derecha = 32;
 	if(izquierda>derecha)
 	{
 		pararranca(IZQUIERDA);
@@ -268,6 +285,7 @@ int main(int argc, const char * argv[])
 		//derecha = data[actual+1];
 		cruzar();
 		printf("d=%d , i=%d\n",derecha,izquierda);
+		generamela();
 		data[actual]= izquierda;
 		data[actual+1] =  derecha;
 		write(FILEPATH,&data,getpagesize());
