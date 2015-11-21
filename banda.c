@@ -1,3 +1,9 @@
+/*
+ * para llamar a este programa nesesitas 2 argumentos
+ * el primer argumento es la cantidad de bandas que hay en la seccion
+ * el segundo argumento es la banda actual
+ * */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
