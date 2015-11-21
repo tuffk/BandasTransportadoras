@@ -43,7 +43,7 @@ int izquierda;
 int onBoard;
 int bandas, secciones, actual;
 SENTIDO sentido;//1: ->; 2: <-; 0: parado;
-double timer;
+time_t timer;
 bool forcestop=false;
 
 void gestor_usrsig1(int sig)
@@ -99,24 +99,24 @@ int check()
 		pararranca(PARADO);
 	}else if(derecha==0){
 		pararranca(IZQUIERDA);
-		timer=0;
+		timer=time(NULL);
 	}else if(izquierda==0){
 		pararranca(DERECHA);
-		timer=0;
+		timer=time(NULL);
 	}
 	else if(sentido ==IZQUIERDA)
 	{
 		if(izquierda<(derecha -4))
 		{
 			cambioSentido();
-			timer=0;
+			timer=time(NULL);
 		}
 			
 	}else if(sentido ==DERECHA){
 		if(derecha<(izquierda-4))
 		{	
 			cambioSentido();
-			timer=0;
+			timer=time(NULL);
 		}
 	}
 	timeout();
@@ -125,7 +125,7 @@ int check()
 
 void timeout()
 {
-	if(timer>60)
+	if(ElapsedTime(timer)>60)
 		pararranca(PARADO);
 }
 
@@ -134,7 +134,7 @@ void cruzar()
 	if(forcestop || (derecha==0 && izquierda == 0))
 		return;
 	
-	if(sentido==IZQUIERDA && capacidad>onBoard)
+	if(sentido==IZQUIERDA && capacidad>onBoard && izquierda >0)
 	{
 		izquierda--;
 		onBoard++;
@@ -157,7 +157,7 @@ void cruzar()
 			}
 		}
 		check();
-	}else if(sentido == DERECHA && capacidad>=onBoard){
+	}else if(sentido == DERECHA && capacidad>=onBoard && derecha > 0){
 		derecha--;
 		onBoard++;
 		
@@ -268,9 +268,7 @@ int main(int argc, const char * argv[])
 	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	izquierda= data[actual]; 
 	derecha = data[actual+1];
-	
-	//izquierda = 31;
-	//derecha = 32;
+	izquierda = derecha = 15;
 	if(izquierda>derecha)
 	{
 		pararranca(IZQUIERDA);
@@ -279,7 +277,8 @@ int main(int argc, const char * argv[])
 	}
 	printf("sentido: %d\n",sentido);
 	sleep(3);
-	while(derecha >0 || izquierda >0)
+	timer = time(NULL);
+	while(true)
 	{
 		//izquierda= data[actual]; 
 		//derecha = data[actual+1];
