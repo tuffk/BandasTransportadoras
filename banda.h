@@ -65,7 +65,7 @@ void aguantamela()
 	}
 }
 
-void cambioSentido(bool forcestop)
+void cambioSentido()
 {
 	if(forcestop)
 		return;
@@ -83,7 +83,7 @@ void cambioSentido(bool forcestop)
 
 
 
-void pararranca(SENTIDO x, bool forcestop)
+void pararranca(SENTIDO x)
 {
 	if(forcestop)
 		return;
@@ -93,7 +93,7 @@ void pararranca(SENTIDO x, bool forcestop)
 		sentido = x;//arranca la banda con el sentido dado
 }
 
-int check(bool forcestop)
+int check()
 {
 	if(forcestop)
 		return;
