@@ -15,6 +15,8 @@
 
 //int bandas;
 //pid_t * tids;
+void master();
+void modishness();
 
 
 int main(int argc, const char * argv[])
@@ -50,7 +52,10 @@ int main(int argc, const char * argv[])
             int id = omp_get_thread_num();
             //*(tids+id) = tid;
             //printf("%d %d\n", id, *(tids+id));
-
+	    if(id ==bandas)
+	    {
+	      
+	    }
 
             
             //signal(SIGTSTP, gestor_usrsig1);
@@ -66,4 +71,27 @@ int main(int argc, const char * argv[])
 void master()
 {
     printf("Hola soy el master\n");        
+}
+
+void modishness()
+{
+  int now=0,i,cont=0;
+  fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	data=mmap(0, bandas*2*sizeof(int), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd, 0);
+	write(fd, "", 1);
+	msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+  whiel(true)
+  {
+    now++;
+    if(now ==1000)
+    {
+      msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+      for(i=0;i<bandas;++i)
+      {
+	cont += data[i];
+      }
+      now=0;
+      printf("en la terminal x hay %d personas en las bandas",cont);
+    }
+  }
 }
