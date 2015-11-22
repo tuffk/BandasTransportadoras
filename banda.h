@@ -22,13 +22,13 @@
 #include <stdlib.h>
 #define BUFSIZE 64
 
-#define FILEPATH "./mmaped.bin"
+#define FILEPATH "/home/mpiuser/mmaped.bin"
 
 #define tcruse 2
 #define capacidad 3
 int bandas;
 
-void start(int a, int b)
+void start(int a, int b, char * hostname)
 {
 	
 	time_t kuz[capacidad];
@@ -284,7 +284,7 @@ void generamela()
 		//izquierda= data[actual]; 
 		//derecha = data[actual+1];
 		cruzar();
-		printf("id =%d, d=%d , i=%d\n",actual,derecha,izquierda);
+		printf("hostname= %s, thread =%d, d=%d , i=%d\n",hostname, actual,derecha,izquierda);
 		generamela();
 		data[actual]= izquierda;
 		data[actual+1] =  derecha;

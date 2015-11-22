@@ -54,7 +54,7 @@ int main(int argc, const char * argv[])
 
             
             //signal(SIGTSTP, gestor_usrsig1);
-            start(bandas, id);
+            start(bandas, id, hostname);
         }
     }
     //free (tids);
