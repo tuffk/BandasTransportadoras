@@ -7,43 +7,30 @@
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <pthread.h>
+#include "banda.h"
 
 #define PATH "./banda"
 
-int bandas;
+//int bandas;
 pid_t * tids;
-void gestor_usrsig1(int sig)
-{
-    for (int i = 0; i < bandas; i++)
-    {
-        pthread_kill(*tids+i, SIGUSR1);
-    }
-}
+
 
 int main(int argc, const char * argv[])
 {
     bandas = atoi(argv[1]);
     tids = malloc(sizeof(pid_t) * bandas);
-    signal(SIGINT, gestor_usrsig1);
-    #pragma omp parallel num_threads(bandas) shared(tids)
-    {
-
+    //signal(SIGTSTP, gestor_ctrlz);
+    #pragma omp parallel num_threads(bandas) private(kuz, fd, data, derecha, izquierda, onBoard, secciones, actual, sentido, timer, forcestop)
+    {     
         pid_t tid = syscall(SYS_gettid);
-
-        //pid_t tid = gettid(); 
-        int id;
-        
+        int id = omp_get_thread_num();
         *(tids+id) = tid;
+        printf("%d %d\n", id, *(tids+id));
 
-        id = omp_get_thread_num();
-        char bandas_char[10];
-        char id_char[10];
-        sprintf(bandas_char, "%d", bandas);
 
-        sprintf(id_char, "%d", id);
-        printf("a %s %s\n", bandas_char, id_char);
-        execl(PATH, bandas_char, id_char);
         
+        signal(SIGTSTP, gestor_usrsig1);
+        start(bandas, id);
     }
     free (tids);
     return 0;
