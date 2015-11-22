@@ -26,7 +26,11 @@
 
 #define tcruse 2
 #define capacidad 3
-time_t kuz[capacidad];
+
+int main(int argc, const char * argv[])
+{
+	
+	time_t kuz[capacidad];
 
 int fd;
 int *data;
@@ -223,10 +227,6 @@ void generamela()
   }
 }
 
-int main(int argc, const char * argv[])
-{
-	
-	
 	
 	// argumentos--------------------
 	bandas=1; secciones=1; actual=0;
