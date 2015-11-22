@@ -26,34 +26,37 @@
 
 #define tcruse 2
 #define capacidad 3
+int bandas;
 
-typedef enum { PARADO, IZQUIERDA, DERECHA} SENTIDO;
-
-time_t kuz[capacidad];
+void start(int a, int b)
+{
+	
+	time_t kuz[capacidad];
 
 int fd;
 int *data;
-int derecha;
-int izquierda;
-int onBoard;
-int bandas, secciones, actual;
-SENTIDO sentido;//1: ->; 2: <-; 0: parado;
-time_t timer;
-bool forcestop=false;
-
-
-void gestor_usrsig1(int sig)
-{
-    printf("TEST\n\n\n");
-	if(forcestop)
-		forcestop=!forcestop;
-	else
-		forcestop=!forcestop;
-}
 
 double ElapsedTime(time_t x)
 {
 	return ((double)(time(NULL)-x));
+}
+
+typedef enum { PARADO, IZQUIERDA, DERECHA} SENTIDO;
+
+int derecha;
+int izquierda;
+int onBoard;
+int /*bandas, */secciones, actual;
+SENTIDO sentido;//1: ->; 2: <-; 0: parado;
+time_t timer;
+bool forcestop=false;
+
+void gestor_usrsig1(int sig)
+{
+	if(forcestop)
+		forcestop=!forcestop;
+	else
+		forcestop=!forcestop;
 }
 
 void aguantamela()
@@ -93,6 +96,12 @@ void pararranca(SENTIDO x)
 		sentido = x;//arranca la banda con el sentido dado
 }
 
+void timeout()
+{
+	if(ElapsedTime(timer)>60)
+		pararranca(PARADO);
+}
+
 int check()
 {
 	if(forcestop)
@@ -125,16 +134,17 @@ int check()
 	
 }
 
-void timeout()
+int decide()
 {
-	if(ElapsedTime(timer)>60)
-		pararranca(PARADO);
+	return rand()%2;
 }
+
 
 void cruzar()
 {
 	if(forcestop || (derecha==0 && izquierda == 0))
 		return;
+	
 	
 	if(sentido==IZQUIERDA && capacidad>onBoard && izquierda >0)
 	{
@@ -203,11 +213,6 @@ void cruzar()
 	}
 }
 
-int decide()
-{
-	return rand()%2;
-}
-
 void generamela()
 {
   int r=0;
@@ -225,11 +230,7 @@ void generamela()
   }
 }
 
-void start(int a, int b)
-{
-
-	//signal(SIGINT, SIG_IGN);
-	//signal(SIGUSR1, gestor_usrsig1);
+	
 	// argumentos--------------------
 	bandas=1; secciones=1; actual=0;
 	//formula para sacar la fila derecha e izquierda de la banda
@@ -282,16 +283,13 @@ void start(int a, int b)
 	{
 		//izquierda= data[actual]; 
 		//derecha = data[actual+1];
-		if(!forcestop)
-		{
-		    cruzar();
-		    printf("id=%d, d=%d , i=%d\n", actual, derecha,izquierda);
-		    generamela();
-		    data[actual]= izquierda;
-		    data[actual+1] =  derecha;
-		    write(FILEPATH,&data,getpagesize());
-		    msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
-		}
+		cruzar();
+		printf("id =%d, d=%d , i=%d\n",actual,derecha,izquierda);
+		generamela();
+		data[actual]= izquierda;
+		data[actual+1] =  derecha;
+		write(FILEPATH,&data,getpagesize());
+		msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	}
 	printf("dejaron de cruzar, d=%d , i=%d\n",derecha,izquierda);
 }

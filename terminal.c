@@ -20,7 +20,7 @@ int main(int argc, const char * argv[])
     bandas = atoi(argv[1]);
     //tids = malloc(sizeof(pid_t) * bandas);
     //signal(SIGTSTP, gestor_ctrlz);
-    #pragma omp parallel num_threads(bandas) private(kuz, fd, data, derecha, izquierda, onBoard, secciones, actual, sentido, timer, forcestop)
+    #pragma omp parallel num_threads(bandas)
     {     
         //pid_t tid = syscall(SYS_gettid);
         int id = omp_get_thread_num();
@@ -29,7 +29,7 @@ int main(int argc, const char * argv[])
 
 
         
-        signal(SIGTSTP, gestor_usrsig1);
+        //signal(SIGTSTP, gestor_usrsig1);
         start(bandas, id);
     }
     //free (tids);
