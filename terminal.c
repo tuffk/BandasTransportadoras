@@ -12,26 +12,26 @@
 #define PATH "./banda"
 
 //int bandas;
-pid_t * tids;
+//pid_t * tids;
 
 
 int main(int argc, const char * argv[])
 {
     bandas = atoi(argv[1]);
-    tids = malloc(sizeof(pid_t) * bandas);
+    //tids = malloc(sizeof(pid_t) * bandas);
     //signal(SIGTSTP, gestor_ctrlz);
     #pragma omp parallel num_threads(bandas) private(kuz, fd, data, derecha, izquierda, onBoard, secciones, actual, sentido, timer, forcestop)
     {     
-        pid_t tid = syscall(SYS_gettid);
+        //pid_t tid = syscall(SYS_gettid);
         int id = omp_get_thread_num();
-        *(tids+id) = tid;
-        printf("%d %d\n", id, *(tids+id));
+        //*(tids+id) = tid;
+        //printf("%d %d\n", id, *(tids+id));
 
 
         
         signal(SIGTSTP, gestor_usrsig1);
         start(bandas, id);
     }
-    free (tids);
+    //free (tids);
     return 0;
 }

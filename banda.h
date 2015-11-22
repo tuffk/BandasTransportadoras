@@ -65,7 +65,7 @@ void aguantamela()
 	}
 }
 
-void cambioSentido()
+void cambioSentido(bool forcestop)
 {
 	if(forcestop)
 		return;
@@ -83,7 +83,7 @@ void cambioSentido()
 
 
 
-void pararranca(SENTIDO x)
+void pararranca(SENTIDO x, bool forcestop)
 {
 	if(forcestop)
 		return;
@@ -93,7 +93,7 @@ void pararranca(SENTIDO x)
 		sentido = x;//arranca la banda con el sentido dado
 }
 
-int check()
+int check(bool forcestop)
 {
 	if(forcestop)
 		return;
@@ -285,7 +285,7 @@ void start(int a, int b)
 		if(!forcestop)
 		{
 		    cruzar();
-		    printf("d=%d , i=%d\n",derecha,izquierda);
+		    printf("id=%d, d=%d , i=%d\n", actual, derecha,izquierda);
 		    generamela();
 		    data[actual]= izquierda;
 		    data[actual+1] =  derecha;
