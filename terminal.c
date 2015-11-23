@@ -109,7 +109,7 @@ int *data;
       }
       //printf("%d!!!\n", cont);
       now=0;
-      printf("en la terminal x hay %d personas en las bandas",cont);
+      //printf("en la terminal x hay %d personas en las bandas",cont);
       MPI_Send(&cont,1,MPI_INT,0,0,MPI_COMM_WORLD);
       cont = 0;
       

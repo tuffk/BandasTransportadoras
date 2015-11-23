@@ -269,7 +269,7 @@ void generamela()
 	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	izquierda= data[actual]; 
 	derecha = data[actual+1];
-	izquierda = derecha = 15;
+	izquierda = derecha = 40;
 	if(izquierda>derecha)
 	{
 		pararranca(IZQUIERDA);
