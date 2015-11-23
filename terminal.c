@@ -10,9 +10,6 @@
 #include "banda.h"
 #include <mpi.h>
 
-
-#define PATH "./banda"
-
 //int bandas;
 //pid_t * tids;
 void master(int );
@@ -111,7 +108,7 @@ int *data;
 	msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
   while(true)
   {
-
+sleep(5);
     //now++;
 
       msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
@@ -122,7 +119,7 @@ int *data;
       }
       MPI_Send(&cont,1,MPI_INT,0,0,MPI_COMM_WORLD);
       cont = 0;
-	sleep(5);
+	
 
   }
 }
