@@ -70,7 +70,13 @@ int main(int argc, const char * argv[])
 
 void master()
 {
-    printf("Hola soy el master\n");        
+    printf("Hola soy el master\n");  
+    int r1,r2;
+    MPI_Irecv(&r1,0,MPI_INT,1,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+    MPI_Irecv(&r2,0,MPI_INT,2,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+    printf("en la terminal %d hay %d personas en las bandas\nen la terminal %d hay %d personas en las bandas",1,r1,2,r2);
+    
+    
 }
 
 void modishness()
@@ -91,7 +97,9 @@ void modishness()
 	cont += data[i];
       }
       now=0;
-      printf("en la terminal x hay %d personas en las bandas",cont);
+      //printf("en la terminal x hay %d personas en las bandas",cont);
+      MPI_Isend(&cont,0,MPI_INT,0,0,MPI_COMM_WORLD);
+      
     }
   }
 }
