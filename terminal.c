@@ -22,7 +22,7 @@ void modishness();
 int main(int argc, const char * argv[])
 {
     bandas = atoi(argv[1]);
-    
+    int provided;
     int myid, numprocs;
     //int data[MAXSIZE];
     //int rbuf[MAXSIZE];
@@ -30,6 +30,7 @@ int main(int argc, const char * argv[])
     char hostname[MPI_MAX_PROCESSOR_NAME];
     int  longitud;
     MPI_Init(&argc,&argv);
+    //MPI_Init_thread(&argc, &argv, MPI_THREAD_SERIALIZED, &provided);
     MPI_Comm_size(MPI_COMM_WORLD,&numprocs);
     MPI_Comm_rank(MPI_COMM_WORLD,&myid);
     
@@ -41,6 +42,7 @@ int main(int argc, const char * argv[])
     if(myid == 0)
     {
         printf("Hostname: %s\n", hostname);
+        
         master();
     }
     else
@@ -48,10 +50,7 @@ int main(int argc, const char * argv[])
     	printf("Hostname:%s\n", hostname);
         #pragma omp parallel num_threads(bandas + 1)
         {     
-            //pid_t tid = syscall(SYS_gettid);
             int id = omp_get_thread_num();
-            //*(tids+id) = tid;
-            //printf("%d %d\n", id, *(tids+id));
 	        if(id ==bandas)
 	        {
 	            sleep(3);
@@ -74,8 +73,8 @@ void master()
 {
     printf("Hola soy el master\n");  
     int r1,r2;
-    MPI_Irecv(&r1,1,MPI_INT,1,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-    MPI_Irecv(&r2,1,MPI_INT,2,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+    MPI_Recv(&r1,1,MPI_INT,1,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+    //MPI_Recv(&r2,1,MPI_INT,2,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
     printf("en la terminal %d hay %d personas en las bandas\nen la terminal %d hay %d personas en las bandas",1,r1,2,r2);
     
     
@@ -83,26 +82,36 @@ void master()
 
 void modishness()
 {
+    MPI_Request request = MPI_REQUEST_NULL;
     int fd;
 int *data;
   int now=0,i,cont=0;
+  printf("1\n");
+  printf("%d", bandas);
   fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
 	data=mmap(0, bandas*2*sizeof(int), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd, 0);
+	printf("2\n");
+	if(data == -1)
+	    printf("error de mapeo");
 	write(fd, "", 1);
 	msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
   while(true)
   {
+
     now++;
-    if(now ==1000)
+    if(now ==100000)
     {
       msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
       for(i=0;i<bandas;++i)
       {
-	cont += data[i];
+	cont += (int)data[i];
+	//printf("%d!!\n", (int)data[i]);
       }
+      //printf("%d!!!\n", cont);
       now=0;
-      //printf("en la terminal x hay %d personas en las bandas",cont);
-      MPI_Isend(&cont,1,MPI_INT,0,0,MPI_COMM_WORLD);
+      printf("en la terminal x hay %d personas en las bandas",cont);
+      MPI_Send(&cont,1,MPI_INT,0,0,MPI_COMM_WORLD);
+      cont = 0;
       
     }
   }
