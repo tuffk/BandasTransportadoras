@@ -15,7 +15,7 @@
 
 //int bandas;
 //pid_t * tids;
-void master();
+void master(int );
 void modishness();
 
 
@@ -45,7 +45,7 @@ int main(int argc, const char * argv[])
     {
         printf("Hostname: %s\n", hostname);
         
-        master();
+        master(numprocs);
     }
     else
     {
@@ -59,7 +59,6 @@ int main(int argc, const char * argv[])
             int id = omp_get_thread_num();
 	        if(id ==bandas)
 	        {
-	            sleep(3);
 	            modishness();
 	        }
             else
@@ -76,13 +75,24 @@ int main(int argc, const char * argv[])
     return 0;
 }
 
-void master()
+void master(int numprocs)
 {
     printf("Hola soy el master\n");  
-    int r1,r2;
-    MPI_Recv(&r1,1,MPI_INT,1,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+	//printf("%d\n", MPI_MAX_PROCESSOR_NAME);
+    int r1;
+int total = 0;
+while(true){
+	total=0;
+    for(int i = 1; i < numprocs; i++)
+	{
+	 MPI_Recv(&r1,1,MPI_INT,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
+	printf("en la terminal %d hay %d personas en las bandas\n", i, r1);
+	total+=r1;
+	}
+	printf("En todas las terminales hay %d personas en las bandas\n", total);
+    //MPI_Recv(&r1,1,MPI_INT,1,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
     //MPI_Recv(&r2,1,MPI_INT,2,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
-    printf("en la terminal %d hay %d personas en las bandas\nen la terminal %d hay %d personas en las bandas",1,r1,2,r2);
+    }
     
     
 }
@@ -102,22 +112,17 @@ int *data;
   while(true)
   {
 
-    now++;
-    /*if(now ==10)
-    {
+    //now++;
+
       msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
       for(i=0;i<bandas;++i)
       {
 	cont += (int)data[i];
 	//printf("%d!!\n", (int)data[i]);
       }
-      //printf("%d!!!\n", cont);
-      now=0;
-      //printf("en la terminal x hay %d personas en las bandas",cont);
       MPI_Send(&cont,1,MPI_INT,0,0,MPI_COMM_WORLD);
       cont = 0;
-      sleep(1);
-      
-    }*/
+	sleep(5);
+
   }
 }

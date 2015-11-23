@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #define BUFSIZE 64
 
-#define FILEPATH "./mmaped.bin"
+#define FILEPATH "/home/mpiuser/mmaped.bin"
 
 #define tcruse 2
 #define capacidad 3
@@ -177,7 +177,7 @@ void cruzar()
 			    //printf("voy a mandar persona a la izquierda de %d, previa %d\n", actual+1,data[((actual+1)*2)]);
 			    msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				data[((actual+1)*2)]+=1;
-				write(FILEPATH,&data,getpagesize());
+				write(FILEPATH,data,getpagesize());
 				msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				//printf("ya mande !!!!!-----------%d\n", data[((actual+1)*2)]);
 				
@@ -208,7 +208,7 @@ void cruzar()
 			    //printf("voy a mandar una persona a la derecha de %d, previa: %d\n", actual-1,data[(((actual-1)*2)+1)]);
     			msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				data[(((actual-1)*2)+1)]+=1;
-				write(FILEPATH,&data,getpagesize());
+				write(FILEPATH,data,getpagesize());
 				msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				//printf("ya mande !!!!!-----------%d\n", data[(((actual-1)*2)+1)]);
 			}
@@ -256,7 +256,7 @@ void generamela()
 
 void miramela()
 {
-  printf("hostname= %s, thread =%d, d=%d , i=%d\n",hostname, actual,data[actual*2 + 1],data[actual*2]);
+  //printf("hostname= %s, thread =%d, d=%d , i=%d\n",hostname, actual,data[actual*2 + 1],data[actual*2]);
 }
 	
 	// argumentos--------------------
@@ -302,7 +302,7 @@ void miramela()
 	data[actual*2+1] = 15;
 	//data[actual*2]= data[actual*2];
 	//data[actual*2+1] =  data[actual*2+1];
-	write(FILEPATH,&data,getpagesize());
+	write(FILEPATH,data,getpagesize());
 	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	//printf("pito (der)id:%d, : %d\n", actual, data[actual*2 + 1]);
 	//printf("pito (izq)id:%d, : %d\n", actual, data[actual*2]);
@@ -335,7 +335,7 @@ void miramela()
 		generamela();
 		//data[actual*2]= data[actual*2];
 		//data[actual*2+1] =  data[actual*2+1];
-		write(FILEPATH,&data,getpagesize());
+		write(FILEPATH,data,getpagesize());
 		msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 		if(tajat>1000000)
 		{
