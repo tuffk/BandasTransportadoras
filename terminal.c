@@ -23,6 +23,8 @@ int main(int argc, const char * argv[])
 {
     bandas = atoi(argv[1]);
     int provided;
+    int fd;
+    int* data;
     int myid, numprocs;
     //int data[MAXSIZE];
     //int rbuf[MAXSIZE];
@@ -48,6 +50,10 @@ int main(int argc, const char * argv[])
     else
     {
     	printf("Hostname:%s\n", hostname);
+	fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
+	data=mmap(0, bandas*2*sizeof(int), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd, 0);
+	write(fd, "", 1);
+	msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
         #pragma omp parallel num_threads(bandas + 1)
         {     
             int id = omp_get_thread_num();
@@ -59,7 +65,8 @@ int main(int argc, const char * argv[])
             else
             {
             //signal(SIGTSTP, gestor_usrsig1);
-            start(bandas, id, hostname);
+	    
+            start(bandas, id, hostname,fd, data);
             }
         }
     }
