@@ -63,8 +63,9 @@ void aguantamela()
 {
 	if(onBoard !=0)
 	{
+	   
 		sleep(3);
-		//printf("espero\n");
+		printf("espero\n");
 	}
 }
 
@@ -104,6 +105,7 @@ void timeout()
 
 int check()
 {
+    //printf("checando\n");
 	if(forcestop)
 		return;
 	if(derecha==0 && izquierda == 0){
@@ -150,6 +152,7 @@ void cruzar()
 	{
 		izquierda--;
 		onBoard++;
+		sleep(3);
 		if(kuz[0]== (time_t)0)
 		{
 			kuz[0] = time(NULL);
@@ -161,18 +164,22 @@ void cruzar()
 		}
 		if(decide())
 		{
+		    printf("decide\n");
 			if(actual <(bandas-1))
 			{
+			    printf("voy a mandar persona a la derecha de %d\n", actual+1);
+			    msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				data[((actual+1)*2)]+=1;
 				write(FILEPATH,&data,getpagesize());
 				msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 			}
 		}
-		check();
+		//check();
 	}else if(sentido == DERECHA && capacidad>=onBoard && derecha > 0){
+
 		derecha--;
 		onBoard++;
-		
+		sleep(3);
 		if(kuz[0]== (time_t)0)
 		{
 			kuz[0] = time(NULL);
@@ -185,32 +192,39 @@ void cruzar()
 		
 		if(decide())
 		{
+		    printf("decide\n");
 			if(actual >(0))
 			{
+			    printf("voy a mandar una persona a la izquierda de %d", actual-1);
+    			msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				data[(((actual-1)*2)+1)]+=1;
 				write(FILEPATH,&data,getpagesize());
 				msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 				
 			}
 		}
-		check();
+		//check();
 	}
 	
 	if(ElapsedTime(kuz[0]) > tcruse)
 	{
 		kuz[0] = (time_t)0;
 		onBoard--;
+		//printf("reste gente a la banda\n");
 	}
 	if(ElapsedTime(kuz[1]) > tcruse)
 	{
 		kuz[1] = (time_t)0;
 		onBoard--;
+				//printf("reste gente a la banda\n");
 	}
 	if(ElapsedTime(kuz[2]) > tcruse)
 	{
 		kuz[2] = (time_t)0;
 		onBoard--;
+				//printf("reste gente a la banda\n");
 	}
+	check();
 }
 
 void generamela()
@@ -267,9 +281,16 @@ void generamela()
 	izquierda = rand()%50;
 	onBoard=0;
 	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
-	izquierda= data[actual]; 
-	derecha = data[actual+1];
-	izquierda = derecha = 40;
+	izquierda= data[actual*2]; 
+	derecha = data[actual*2+1];
+	izquierda = 30;
+	derecha = 30;
+	data[actual*2]= izquierda;
+    data[actual*2+1] =  derecha;
+	write(FILEPATH,&data,getpagesize());
+	msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+	printf("pito (derecha)id:%d, : %d\n", actual, data[actual*2 + 1]);
+	printf("pito (izq)id:%d, : %d\n", actual, data[actual*2]);
 	if(izquierda>derecha)
 	{
 		pararranca(IZQUIERDA);
@@ -277,17 +298,24 @@ void generamela()
 		pararranca(DERECHA);
 	}
 	printf("sentido: %d\n",sentido);
-	sleep(3);
+	sleep(2);
 	timer = time(NULL);
 	while(true)
 	{
-		//izquierda= data[actual]; 
-		//derecha = data[actual+1];
+	
+	    msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
+		izquierda= data[actual*2]; 
+		derecha = data[actual*2+1];
+			printf("data (derecha) id: %d, : %d\n", actual, data[actual*2 + 1]);
+			printf("data (izq) id: %d, : %d\n", actual, data[actual*2]);
+			sleep(5);
 		cruzar();
+		msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 		printf("hostname= %s, thread =%d, d=%d , i=%d\n",hostname, actual,derecha,izquierda);
+		
 		generamela();
-		data[actual]= izquierda;
-		data[actual+1] =  derecha;
+		data[actual*2]= izquierda;
+		data[actual*2+1] =  derecha;
 		write(FILEPATH,&data,getpagesize());
 		msync (FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
 	}

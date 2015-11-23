@@ -86,11 +86,8 @@ void modishness()
     int fd;
 int *data;
   int now=0,i,cont=0;
-  printf("1\n");
-  printf("%d", bandas);
   fd = open(FILEPATH, O_RDWR | O_CREAT | O_TRUNC, (mode_t)0600);
 	data=mmap(0, bandas*2*sizeof(int), PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd, 0);
-	printf("2\n");
 	if(data == -1)
 	    printf("error de mapeo");
 	write(fd, "", 1);
@@ -99,7 +96,7 @@ int *data;
   {
 
     now++;
-    if(now ==100000)
+    /*if(now ==10)
     {
       msync(FILEPATH, bandas*2*sizeof(int), MS_ASYNC);
       for(i=0;i<bandas;++i)
@@ -112,7 +109,8 @@ int *data;
       //printf("en la terminal x hay %d personas en las bandas",cont);
       MPI_Send(&cont,1,MPI_INT,0,0,MPI_COMM_WORLD);
       cont = 0;
+      sleep(1);
       
-    }
+    }*/
   }
 }
